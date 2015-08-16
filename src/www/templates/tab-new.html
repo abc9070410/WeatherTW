@@ -1,0 +1,43 @@
+<ion-view view-title="最新資訊">
+  <ion-content class="padding">
+  
+    <h2>{{text}}</h2>
+  
+    <div class="list card">
+      <div class="item item-divider">目標資訊</div>
+      <div class="item item-body">
+        <p>目標名稱: {{currentLocationName}}</p>
+        <p>目標地點: {{currentLocationGPS}}</p>
+      </div>
+    </div>
+    
+  
+    <div class="list card">
+      <div class="item item-divider">降雨資訊</div>
+      <div class="item item-body">
+        <p>觀測站名稱: {{rainPastStationName}}</p>
+        <p>{{rainPastRecord}}</p>
+        <i class="icon {{rainPastIcon}}"></i>
+        
+        <p>觀測站地點: {{rainPastStationGPS}}</p>
+        <p>距離: {{rainPastStationDistance}}</p>
+      </div>
+    </div>
+    
+    <div class="list card">
+      <div class="item item-divider">降雨預測</div>
+      <div class="item item-body">
+        <p>觀測站名稱: {{rainFutureStationName}}</p>
+        <p>{{rainFutureStationRecord}}</p>
+        <i class="icon {{rainFutureStationIcon}}"></i>
+        
+        <p>觀測站地點: {{rainFutureStationGPS}}</p>
+        <p>距離: {{rainFutureStationDistance}}</p>
+      </div>
+    </div>
+    
+    
+    <button class="button" ng-click="clickUpdate()">更新降雨資料(test)</button>
+    <button class="button" ng-click="clickSearch()">搜尋地區</button>
+  </ion-content>
+</ion-view>

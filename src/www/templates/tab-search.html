@@ -1,0 +1,21 @@
+<ion-view view-title="搜尋地區">
+  <ion-content>
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input type="search" ng-model="inputKeyword" ng-change="onSearchChange(inputKeyword)" placeholder="請輸入地點名稱">
+    </label>
+  
+    <ion-list>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="chat in chats" type="item-text-wrap" href="#/tab/search/{{chat.id}}">
+        
+        <h2>{{chat.location}}</h2>
+        <p>{{chat.description}}</p>
+        <i class="icon {{chat.icon}}"></i>
+
+        <ion-option-button class="button-assertive" ng-click="remove(chat)">
+          Delete
+        </ion-option-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
