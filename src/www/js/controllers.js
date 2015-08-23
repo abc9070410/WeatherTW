@@ -2,6 +2,10 @@ angular.module('starter.controllers', [])
 
 .controller('NewCtrl', function($scope, $state, $ionicLoading, $ionicPlatform) {
     
+    $scope.locationLoaded = false;
+    $scope.rainPastLoaded = false;
+    $scope.rainFutureLoaded = false;
+    $scope.rainFutureLoaded2 = false;
     
     $scope.loadStart = function() {
         $ionicLoading.show({
@@ -30,6 +34,8 @@ angular.module('starter.controllers', [])
             parseGPS(this.responseText);
             
             $scope.currentLocationGPS = gasTargetGPS;
+            $scope.locationLoaded = true;
+            $state.go($state.current, {}, {}); // page update
             
             var i = getNearLocationIndex(GOV_DATA, gasTargetGPS[0], gasTargetGPS[1]);
             
@@ -48,6 +54,8 @@ angular.module('starter.controllers', [])
             
             $scope.rainPastRecord = $scope.chat.description;
             $scope.rainPastIcon = $scope.chat.icon;
+            $scope.rainPastLoaded = true;
+            $state.go($state.current, {}, {}); // page update
             
             
             
@@ -64,6 +72,9 @@ angular.module('starter.controllers', [])
             
             addJS(jsUrl, $scope.addJSDone);
             
+            var futurueRainUrl = "http://www.cwb.gov.tw/V7/forecast/town368/3Hr/" + GOV_DATA2[i][2] + ".htm";
+            sendHttpRequest(futurueRainUrl, $scope.futureRainDone);
+            
             
         }
     }
@@ -72,12 +83,36 @@ angular.module('starter.controllers', [])
     $scope.clickSearch = function() {
     }
     
+    $scope.futureRainDone = function() {
+        console.log("futureRainDone : " + MyLabel);
+        
+        if (this.readyState == 4)
+        {
+            var aasFutureRainData = parseTownFutureRain(this.responseText);
+            
+            $scope.rainFutureDate = aasFutureRainData[0];
+            $scope.rainFutureTime = aasFutureRainData[1];
+            $scope.rainFutureState = aasFutureRainData[2];
+            $scope.rainFutureTemperature = aasFutureRainData[3];
+            $scope.rainFutureWindLevel = aasFutureRainData[4];
+            $scope.rainFutureWindDirection = aasFutureRainData[5];
+            $scope.rainFutureRelative = aasFutureRainData[6];
+            $scope.rainFutureRate = aasFutureRainData[7];
+            $scope.rainFutureFeel = aasFutureRainData[8];
+            
+            $scope.rainFutureLoaded2 = true;
+            $state.go($state.current, {}, {}); // page update
+            
+        }
+    }
+    
     $scope.addJSDone = function() {
         console.log("add JS done : " + MyLabel);
         
         $scope.rainFutureStationRecord = MyLabel;
+        $scope.rainFutureLoaded = true;
         
-        $scope.loadDone();
+        //$scope.loadDone();
         //window.location.reload(true);
         $state.go($state.current, {}, {}); // page update
     }
@@ -85,10 +120,12 @@ angular.module('starter.controllers', [])
     $scope.init = function() {
         if (window.cordova)
         {
-            $scope.loadStart();
+            //$scope.loadStart();
             requestNewRainfall($scope.requestRailfallDone);
         }
         
+        parseTownFutureRain(RAIN_TEXT);
+
         var jsTown = "http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js";
         
         //addJS(jsTown, $scope.addJSDone);
@@ -122,7 +159,7 @@ angular.module('starter.controllers', [])
         },
         function() {
             console.log("no Extra");
-            $scope.loadDone();
+            //$scope.loadDone();
         });
     }
     
@@ -214,10 +251,6 @@ http://203.71.213.35/toread/opac/bibliographic_view/270570?location=0&q=KEYWORD&
 
 新竹市圖書館
 http://webpac.hcml.gov.tw/webpac/booksearch.do?searchtype=simplesearch&search_field=TI&search_input=KEYWORD
-
-1. 阿祖說媽媽辦了很多支手機，很多帳單寄過來
-2. 功德會可以幫忙出轉移房子的錢，但基金會的律師說需要媽媽本人到場
-3. 券益每個月一千九還沒有轉到阿祖這邊，還有怕媽媽結婚，導致這個一千九領不到
 
 */
 

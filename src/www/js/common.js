@@ -41,6 +41,56 @@ function getNearLocationIndex(asData, fLat, fLon)
 	return fMinIndex;
 }
 
+function parseTownFutureRain(sText)
+{
+    var asTokens = sText.split("<tr");
+    
+    // 日期, 時間, 天氣狀況, 溫度, 蒲福風級, 風向, 相對溼度, 降雨機率, 舒適度
+    
+    var aasFutureRainData = [];
+    
+    for (var i = 1; i < asTokens.length; i ++)
+    {
+        var asRow = asTokens[i].trim().split("<td");
+        
+        var asData = [];
+        
+        for (var j = 2; j < asRow.length; j ++)
+        {
+            var sTemp = "<td" + asRow[j];
+            var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
+
+            if (sTemp.indexOf("<img") > 0)
+            {
+                var asTemp2 = sTemp.split("\"");
+                sData = asTemp2[1] + "_" + asTemp2[3];
+            }
+            
+            if (sTemp.indexOf("colspan=") > 0)
+            {
+                var iColspan = parseInt(sTemp.split("\"")[1]); 
+                
+                for (var k = 0; k < iColspan; k ++)
+                {
+                    asData[asData.length] = sData;
+                }
+            }
+            else
+            {
+                asData[asData.length] = sData;
+            }
+            
+            
+        }
+        
+        console.log( i + "," + j + " : " + asData);
+        
+        aasFutureRainData[i - 1] = asData;
+    }
+    
+    return aasFutureRainData;
+}
+
 function parseGovData(sText)
 {
 	var asTokens = sText.split("<tbody>")[1].split("<tr");
