@@ -41,6 +41,51 @@ function getNearLocationIndex(asData, fLat, fLon)
 	return fMinIndex;
 }
 
+function parseTownPastRain(sText)
+{
+    var asTokens = sText.split("<tr");
+    
+    // 時間, 溫度, 天氣描述, 風向, 蒲福風級, 相對溼度, 累積雨量
+    
+    var aasPastRainData = [];
+    
+    for (var i = 2; i < asTokens.length; i ++)
+    {
+        var asRow = asTokens[i].trim().split("<td");
+        var iCount = 0;
+        
+        for (var j = 0; j < asRow.length; j ++)
+        {
+            var sTemp = "<td" + asRow[j];
+            var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
+            
+            if (j == 2 || j == 6 || j == 7 || j == 9)
+            {
+                continue;
+            }
+            
+            if (!aasPastRainData[iCount])
+            {
+                aasPastRainData[iCount] = [];
+            }
+            
+            var iCount2 = aasPastRainData[iCount].length;
+            aasPastRainData[iCount][iCount2] = sData;
+            
+            iCount++;
+        }
+        
+        
+    }
+    
+    for (i = 0; i < aasPastRainData.length; i ++)
+    {
+        console.log( i + " : " + aasPastRainData[i]);
+    }
+    
+    return aasPastRainData;
+}
+
 function parseTownFutureRain(sText)
 {
     var asTokens = sText.split("<tr");
@@ -48,7 +93,7 @@ function parseTownFutureRain(sText)
     // 日期, 時間, 天氣狀況, 溫度, 蒲福風級, 風向, 相對溼度, 降雨機率, 舒適度
     
     var aasFutureRainData = [];
-    
+
     for (var i = 1; i < asTokens.length; i ++)
     {
         var asRow = asTokens[i].trim().split("<td");

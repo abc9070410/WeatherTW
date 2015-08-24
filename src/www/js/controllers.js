@@ -4,6 +4,7 @@ angular.module('starter.controllers', [])
     
     $scope.locationLoaded = false;
     $scope.rainPastLoaded = false;
+    $scope.rainPastLoaded2 = false;
     $scope.rainFutureLoaded = false;
     $scope.rainFutureLoaded2 = false;
     
@@ -25,7 +26,7 @@ angular.module('starter.controllers', [])
         buildRainfallData();
         $scope.chat = getRailfallData(GOV_DATA[2][2])[0];
         $scope.text = "test done";
-        $state.go($state.current, {}, {}); // page update
+        $scope.updatePage();
     };
     $scope.findRainfall = function() {
         if ((this.readyState == 3 || this.readyState == 4) && 
@@ -35,7 +36,7 @@ angular.module('starter.controllers', [])
             
             $scope.currentLocationGPS = gasTargetGPS;
             $scope.locationLoaded = true;
-            $state.go($state.current, {}, {}); // page update
+            $scope.updatePage();
             
             var i = getNearLocationIndex(GOV_DATA, gasTargetGPS[0], gasTargetGPS[1]);
             
@@ -55,7 +56,20 @@ angular.module('starter.controllers', [])
             $scope.rainPastRecord = $scope.chat.description;
             $scope.rainPastIcon = $scope.chat.icon;
             $scope.rainPastLoaded = true;
-            $state.go($state.current, {}, {}); // page update
+            $scope.updatePage();
+            
+            
+            i = getNearLocationIndex(PAST_24HR_STATION, gasTargetGPS[0], gasTargetGPS[1]);
+            $scope.past24HrStationName = PAST_24HR_STATION[i][1] + "," + PAST_24HR_STATION[i][2];
+            $scope.past24HrStationGPS = gasStationGPS;
+            $scope.past24HrStationDistance = gsDistance + " km";
+            
+            console.log("past 24hr GET:" + PAST_24HR_STATION[i]);
+            
+            var past24HrRainUrl = "http://www.cwb.gov.tw/V7/observe/24real/Data/" + PAST_24HR_STATION[i][2] + ".htm";
+            sendHttpRequest(past24HrRainUrl, $scope.pastRainDone);
+            
+            
             
             
             
@@ -83,9 +97,26 @@ angular.module('starter.controllers', [])
     $scope.clickSearch = function() {
     }
     
+    $scope.pastRainDone = function() {
+        if (this.readyState == 4)
+        {
+            var aasPastRainData = parseTownPastRain(this.responseText);
+            
+            $scope.rainPastTime = aasPastRainData[0];
+            $scope.rainPastTemperature = aasPastRainData[1];
+            $scope.rainPastState = aasPastRainData[2];
+            $scope.rainPastWindDirection = aasPastRainData[3];
+            $scope.rainPastWindLevel = aasPastRainData[4];
+            $scope.rainPastRelative = aasPastRainData[5];
+            $scope.rainPastRainfall = aasPastRainData[6];
+            
+            $scope.rainPastLoaded2 = true;
+            $scope.updatePage();
+            
+        }
+    }
+    
     $scope.futureRainDone = function() {
-        console.log("futureRainDone : " + MyLabel);
-        
         if (this.readyState == 4)
         {
             var aasFutureRainData = parseTownFutureRain(this.responseText);
@@ -101,20 +132,18 @@ angular.module('starter.controllers', [])
             $scope.rainFutureFeel = aasFutureRainData[8];
             
             $scope.rainFutureLoaded2 = true;
-            $state.go($state.current, {}, {}); // page update
+            $scope.updatePage();
             
         }
     }
     
     $scope.addJSDone = function() {
-        console.log("add JS done : " + MyLabel);
-        
         $scope.rainFutureStationRecord = MyLabel;
         $scope.rainFutureLoaded = true;
         
         //$scope.loadDone();
         //window.location.reload(true);
-        $state.go($state.current, {}, {}); // page update
+        $scope.updatePage();
     }
     
     $scope.init = function() {
@@ -124,11 +153,10 @@ angular.module('starter.controllers', [])
             requestNewRainfall($scope.requestRailfallDone);
         }
         
-        parseTownFutureRain(RAIN_TEXT);
-
-        var jsTown = "http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js";
-        
-        //addJS(jsTown, $scope.addJSDone);
+        // test 
+        //parseTownFutureRain(RAIN_TEXT);
+        //parseTownPastRain(PAST_24HR_TEMP);
+        //addJS("http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js", $scope.addJSDone);
     }
     
     $scope.requestRailfallDone = function() {
@@ -159,8 +187,23 @@ angular.module('starter.controllers', [])
         },
         function() {
             console.log("no Extra");
-            //$scope.loadDone();
+            
+            $scope.noLoaded();
         });
+    }
+    
+    $scope.noLoaded = function() {
+        $scope.locationLoaded = true;
+        $scope.rainPastLoaded = true;
+        $scope.rainPastLoaded2 = true;
+        $scope.rainFutureLoaded = true;
+        $scope.rainFutureLoaded2 = true;
+        
+        $scope.updatePage();
+    }
+    
+    $scope.updatePage = function() {
+        $state.go($state.current, {}, {}); // page update
     }
     
     $ionicPlatform.ready(function() {
@@ -206,7 +249,7 @@ angular.module('starter.controllers', [])
       $scope.chats = getRailfallData(inputKeyword);
       $scope.prevInputKeyword = inputKeyword;
       
-      $state.go($state.current, {}, {}); // page update
+      $scope.updatePage();
   }
 })
 
@@ -240,6 +283,10 @@ http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js
 http://www.cwb.gov.tw/V7/forecast/town368/7Day/plot/6801100_7Day.js
 
 http://www.cwb.gov.tw/V7/forecast/town368/24GTPast/6801300.htm
+
+過去24小時天氣紀錄
+http://www.cwb.gov.tw/V7/observe/24real/Data/46757.htm
+http://www.cwb.gov.tw/V7/observe/real/ALL.htm
 
 
 // Libary Search :
