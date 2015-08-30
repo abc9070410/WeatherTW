@@ -1,0 +1,12 @@
+<ion-view view-title="天氣紀錄">
+  <ion-content>
+    <div class="list card">
+        <div class="row" ng-repeat="pastData in pastDataArray">
+          <div class="col">{{pastData.rainPastTime}}</div>
+          <div class="col">{{pastData.rainPastTemperature}}</div>
+          <div class="col">{{pastData.rainPastState}}</div>
+          <div class="col">{{pastData.rainPastRainfall}}</div>
+        </div>
+    </div>
+  </ion-content>
+</ion-view>

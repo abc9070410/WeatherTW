@@ -1,11 +1,55 @@
 <ion-view view-title="最新資訊">
+
   <ion-content class="padding">
+    <div class="row">
+      <div class="col text-center">
+        <button ng-click="clickUpdate()" class="button right button-icon icon ion-refresh"></button>
+      </div>
+      <div class="col text-center">
+        <button ng-click="clickSearchIcon()" class="button right button-icon icon ion-search"></button>
+      </div>
+      <div class="col text-center">
+        <button ng-click="clickFavouriteIcon()" class="button right button-icon icon ion-star"></button>
+      </div>
+    </div>
   
     <h2>{{text}}</h2>
+    
+    <div class="quote" ng-if="!rainPastLoaded2">
+        <a class="item item-icon-right" href="">
+          <ion-spinner></ion-spinner>　取得天氣紀錄...
+        </a>
+    </div>
+    <div ng-if="rainPastLoaded2">
+    <a class="item item-icon-left item-icon-right" href="#/tab/new/past">
+      <i class="icon ion-android-done"></i>
+      天氣記錄
+      <i class="icon ion-arrow-right-c"></i>
+    </a>
+    </div>
+    
+    
+    
+    <div class="quote" ng-if="!rainFutureLoaded2">
+      <a class="item item-icon-right" href="">
+          <ion-spinner></ion-spinner>　取得天氣預測...
+      </a>
+    </div>
+    <div ng-if="rainFutureLoaded2">
+    <a class="item item-icon-left item-icon-right" href="#/tab/new/future">
+      <i class="icon ion-android-done"></i>
+      天氣預測
+      <i class="icon ion-arrow-right-c"></i>
+    </a>
+    </div>
+    
   
     <div class="list card">
       <div class="item item-divider">目標資訊</div>
-      <div class="item item-body">
+      <div class="quote" ng-if="!locationLoaded">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div class="item item-body" ng-if="locationLoaded">
         <p>目標名稱: {{currentLocationName}}</p>
         <p>目標地點: {{currentLocationGPS}}</p>
       </div>
@@ -13,20 +57,38 @@
     
   
     <div class="list card">
-      <div class="item item-divider">降雨資訊</div>
-      <div class="item item-body">
+      <div class="item item-divider">紀錄觀測站</div>
+      <!--
+      <div class="quote" ng-if="rainPastLoaded">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div class="item item-body" ng-if="!rainPastLoaded">
         <p>觀測站名稱: {{rainPastStationName}}</p>
         <p>{{rainPastRecord}}</p>
         <i class="icon {{rainPastIcon}}"></i>
-        
         <p>觀測站地點: {{rainPastStationGPS}}</p>
         <p>距離: {{rainPastStationDistance}}</p>
       </div>
+      -->
+      <div class="quote" ng-if="!rainPastLoaded2">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div class="item item-body" ng-if="rainPastLoaded2">
+        <p>觀測站名稱: {{past24HrStationName}}</p>
+        <p>觀測站地點: {{past24HrStationGPS}}</p>
+        <p>距離: {{past24HrStationDistance}}</p>
+
+      </div>
+
     </div>
     
+    
     <div class="list card">
-      <div class="item item-divider">降雨預測</div>
-      <div class="item item-body">
+      <div class="item item-divider">預測觀測站</div>
+      <div class="quote" ng-if="!rainFutureLoaded2">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div class="item item-body" ng-if="rainFutureLoaded2">
         <p>觀測站名稱: {{rainFutureStationName}}</p>
         <p>{{rainFutureStationRecord}}</p>
         <i class="icon {{rainFutureStationIcon}}"></i>
@@ -35,9 +97,5 @@
         <p>距離: {{rainFutureStationDistance}}</p>
       </div>
     </div>
-    
-    
-    <button class="button" ng-click="clickUpdate()">更新降雨資料(test)</button>
-    <button class="button" ng-click="clickSearch()">搜尋地區</button>
   </ion-content>
 </ion-view>

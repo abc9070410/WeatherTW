@@ -21,7 +21,9 @@ function getNearLocationIndex(asData, fLat, fLon)
 {
 	var fMinKM = 1000;
 	var fMinIndex = -1;
-	
+    
+    //console.log("getNearLocationIndex:" + asData[0] + ":" + asData.length + "," + fLat + "," + fLon);
+
 	for (var i = 0; i < asData.length; i ++)
 	{
 		var fKM = getDistanceFromLatLonInKm(asData[i][3], asData[i][4], fLat, fLon);
@@ -34,6 +36,8 @@ function getNearLocationIndex(asData, fLat, fLon)
 			//console.log("MIN:" + fMinIndex + ":" + fMinKM);
 		}
 	}
+    
+    //console.log("Got nearest site: " + asData[fMinIndex]);
     
     gsDistance = fMinKM;
     gasStationGPS = [asData[fMinIndex][3], asData[fMinIndex][4]];
@@ -80,7 +84,7 @@ function parseTownPastRain(sText)
     
     for (i = 0; i < aasPastRainData.length; i ++)
     {
-        console.log( i + " : " + aasPastRainData[i]);
+        //console.log( i + " : " + aasPastRainData[i]);
     }
     
     return aasPastRainData;
@@ -167,7 +171,7 @@ function parseGovData(sText)
 		if (!bFound)
 		{
 			gasUpdateData[index] = [];
-			console.log("#" + index + "_" + asUsedLocation[index]);
+			//console.log("#" + index + "_" + asUsedLocation[index]);
 		}
         
 		var j = gasUpdateData[index].length;
@@ -193,7 +197,7 @@ function getGovDataInfo(sID)
 	return null;
 }
 
-function getRailfallData(sKeyword)
+function paserRainfallData(sKeyword)
 {
     var aData = [];
 	for (var i = 0; i < gasUpdateData.length; i ++)
@@ -208,9 +212,13 @@ function getRailfallData(sKeyword)
         }
 	}
     
-    console.log("getRailfallData : found " + aData.length + " data by " + sKeyword);
-	
-	return aData;
+    console.log("paserRainfallData : found " + aData.length + " data by " + sKeyword);
+    
+    if (aData && aData[0])
+    {
+        gsRainPastRecord = aData[0].description;
+        gsRainPastIcon = aData[0].icon;
+    }
 }
 
 /*
@@ -267,7 +275,7 @@ var parseRainfallData = function(iNo, sOriginData, bIsNight)
 
 var fClickUpdate = function()
 {
-    //alert("Update !");
+    console.log("Update !");
     requestNewRainfall();
     
 }
@@ -436,4 +444,16 @@ function addJS( sJsFile, fDoneFunction )
         document.head.appendChild(oScript);
         //unlockWait();
     }
+}
+
+function clickKeyword()
+{
+    $ionicPopup.prompt({
+        title: 'Password Check',
+        template: 'Enter your secret password',
+        inputType: 'password',
+        inputPlaceholder: 'Your password'
+        }).then(function(res) {
+        console.log('Your password is', res);
+    });
 }

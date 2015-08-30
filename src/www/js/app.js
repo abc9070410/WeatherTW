@@ -63,6 +63,28 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       }
     }
   })
+  
+  .state('tab.new-past', {
+    cache: false,
+    url: '/new/past',
+    views: {
+      'tab-new': {
+        templateUrl: 'templates/tab-new-past.html',
+        controller: 'NewPastCtrl'
+      }
+    }
+  })
+  
+  .state('tab.new-future', {
+    cache: false,
+    url: '/new/future',
+    views: {
+      'tab-new': {
+        templateUrl: 'templates/tab-new-future.html',
+        controller: 'NewFutureCtrl'
+      }
+    }
+  })
 
   .state('tab.search', {
       cache: false,

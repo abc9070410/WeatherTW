@@ -1,0 +1,13 @@
+<ion-view view-title="天氣預測">
+  <ion-content>
+    <div class="list card">
+        <div class="row" ng-repeat="futureData in futureDataArray">
+          <div class="col">{{futureData.rainFutureTime}}</div>
+          <div class="col">{{futureData.rainFutureTemperature}}</div>
+          <div class="col" ng-if="futureData.rainFutureExistIcon"><img src="{{futureData.rainFutureState}}"></div>
+          <div class="col" ng-if="!futureData.rainFutureExistIcon">{{futureData.rainFutureState}}</div>
+          <div class="col">{{futureData.rainFutureRate}}</div>
+        </div>
+    </div>
+  </ion-content>
+</ion-view>
