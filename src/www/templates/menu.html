@@ -1,0 +1,60 @@
+<ion-side-menus enable-menu-with-back-views="false">
+  <ion-side-menu-content>
+    <ion-nav-bar class="bar-dark">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+      
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+      <ion-nav-buttons side="secondary">
+        <button ng-if="showSearchIcon" class="button button-icon button-clear ion-search" ng-click="clickSearchIcon()" >
+        </button>
+      </ion-nav-buttons>
+      <ion-nav-buttons side="right">
+        <button ng-if="showFavouriteIcon && !favouriteExisted" class="button button-icon button-clear ion-android-star-outline" ng-click="clickFavouriteIcon()" >
+        </button>
+        <button ng-if="showFavouriteIcon && favouriteExisted" class="button button-icon button-clear ion-android-star" ng-click="clickFavouriteIcon()" >
+        </button>
+      </ion-nav-buttons>
+      <ion-nav-buttons side="primary">
+        <button ng-if="showRefreshIcon" class="button button-icon button-clear ion-refresh" ng-click="clickRefreshIcon()" >
+        </button>
+      </ion-nav-buttons>
+      
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent"></ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu side="left">
+    <ion-header-bar class="bar-stable">
+      <h1 class="title">選單列</h1>
+    </ion-header-bar>
+    <ion-content>
+      <ion-list>
+        <ion-item menu-close class="item item-icon-left" href="#/app/info" ng-click="goInfo()">
+          <i class="icon ion-ios-pulse-strong"></i>
+          天氣資訊
+        </ion-item>
+        <ion-item menu-close class="item item-icon-left" href="#/app/history" ng-click="goHistory()">
+          <i class="icon ion-ios-bookmarks-outline"></i>
+          查詢歷史
+        </ion-item>
+        <ion-item menu-close class="item item-icon-left" href="#/app/favourite" ng-click="goFavourite()">
+          <i class="icon ion-star"></i>
+          最愛地點
+        </ion-item>
+        <ion-item menu-close class="item item-icon-left" href="#/app/option" ng-click="goOption()">
+          <i class="icon ion-ios-gear-outline"></i>
+          選項設定
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>

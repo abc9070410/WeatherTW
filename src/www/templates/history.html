@@ -1,0 +1,11 @@
+<ion-view view-title="查詢紀錄">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item item-thumbnail-left" ng-repeat="historyData in historyDataArray" href="#/app/info" ng-click="clickHistory(historyData.id)">
+        <img ng-if="historyData.snapshotUrl" src="{{historyData.snapshotUrl}}">
+        <h2>{{historyData.location}} </h2>
+        <p>{{historyData.gps1}} , {{historyData.gps2}}</p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

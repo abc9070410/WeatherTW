@@ -1,0 +1,11 @@
+<ion-view view-title="最愛地點">
+  <ion-content on-swipe-left="goRight()" on-swipe-down="swipeDown()">
+    <ion-list>
+      <ion-item class="item item-thumbnail-left" ng-repeat="favouriteData in favouriteDataArray" href="#/app/info" ng-click="clickFavourite(favouriteData.id)">
+        <img ng-if="historyData.snapshotUrl" src="{{favouriteData.snapshotUrl}}">
+        <h2>{{favouriteData.location}} </h2>
+        <p>{{favouriteData.gps1}} , {{favouriteData.gps2}}</p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

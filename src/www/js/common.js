@@ -1,7 +1,7 @@
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) 
 {
 	var R = 6371; // Radius of the earth in km
-	var dLat = deg2rad(lat2-lat1);  // deg2rad below
+	var dLat = deg2rad(lat2-lat1); // deg2rad below
 	var dLon = deg2rad(lon2-lon1); 
 	var a = 
 		Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -21,8 +21,8 @@ function getNearLocationIndex(asData, fLat, fLon)
 {
 	var fMinKM = 1000;
 	var fMinIndex = -1;
-    
-    //console.log("getNearLocationIndex:" + asData[0] + ":" + asData.length + "," + fLat + "," + fLon);
+  
+  //console.log("getNearLocationIndex:" + asData[0] + ":" + asData.length + "," + fLat + "," + fLon);
 
 	for (var i = 0; i < asData.length; i ++)
 	{
@@ -36,108 +36,108 @@ function getNearLocationIndex(asData, fLat, fLon)
 			//console.log("MIN:" + fMinIndex + ":" + fMinKM);
 		}
 	}
-    
-    //console.log("Got nearest site: " + asData[fMinIndex]);
-    
-    gsDistance = fMinKM;
-    gasStationGPS = [asData[fMinIndex][3], asData[fMinIndex][4]];
+  
+  //console.log("Got nearest site: " + asData[fMinIndex]);
+  
+  gsDistance = fMinKM;
+  gasStationGPS = [asData[fMinIndex][3], asData[fMinIndex][4]];
 	
 	return fMinIndex;
 }
 
 function parseTownPastRain(sText)
 {
-    var asTokens = sText.split("<tr");
+  var asTokens = sText.split("<tr");
+  
+  // 時間, 溫度, 天氣描述, 風向, 蒲福風級, 相對溼度, 累積雨量
+  
+  var aasPastRainData = [];
+  
+  for (var i = 2; i < asTokens.length; i ++)
+  {
+    var asRow = asTokens[i].trim().split("<td");
+    var iCount = 0;
     
-    // 時間, 溫度, 天氣描述, 風向, 蒲福風級, 相對溼度, 累積雨量
-    
-    var aasPastRainData = [];
-    
-    for (var i = 2; i < asTokens.length; i ++)
+    for (var j = 0; j < asRow.length; j ++)
     {
-        var asRow = asTokens[i].trim().split("<td");
-        var iCount = 0;
-        
-        for (var j = 0; j < asRow.length; j ++)
-        {
-            var sTemp = "<td" + asRow[j];
-            var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
-            
-            if (j == 2 || j == 6 || j == 7 || j == 9)
-            {
-                continue;
-            }
-            
-            if (!aasPastRainData[iCount])
-            {
-                aasPastRainData[iCount] = [];
-            }
-            
-            var iCount2 = aasPastRainData[iCount].length;
-            aasPastRainData[iCount][iCount2] = sData;
-            
-            iCount++;
-        }
-        
-        
+      var sTemp = "<td" + asRow[j];
+      var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
+      
+      if (j == 2 || j == 6 || j == 7 || j == 9)
+      {
+        continue;
+      }
+      
+      if (!aasPastRainData[iCount])
+      {
+        aasPastRainData[iCount] = [];
+      }
+      
+      var iCount2 = aasPastRainData[iCount].length;
+      aasPastRainData[iCount][iCount2] = sData;
+      
+      iCount++;
     }
     
-    for (i = 0; i < aasPastRainData.length; i ++)
-    {
-        //console.log( i + " : " + aasPastRainData[i]);
-    }
     
-    return aasPastRainData;
+  }
+  
+  for (i = 0; i < aasPastRainData.length; i ++)
+  {
+    //console.log( i + " : " + aasPastRainData[i]);
+  }
+  
+  return aasPastRainData;
 }
 
 function parseTownFutureRain(sText)
 {
-    var asTokens = sText.split("<tr");
-    
-    // 日期, 時間, 天氣狀況, 溫度, 蒲福風級, 風向, 相對溼度, 降雨機率, 舒適度
-    
-    var aasFutureRainData = [];
+  var asTokens = sText.split("<tr");
+  
+  // 日期, 時間, 天氣狀況, 溫度, 蒲福風級, 風向, 相對溼度, 降雨機率, 舒適度
+  
+  var aasFutureRainData = [];
 
-    for (var i = 1; i < asTokens.length; i ++)
+  for (var i = 1; i < asTokens.length; i ++)
+  {
+    var asRow = asTokens[i].trim().split("<td");
+    
+    var asData = [];
+    
+    for (var j = 2; j < asRow.length; j ++)
     {
-        var asRow = asTokens[i].trim().split("<td");
-        
-        var asData = [];
-        
-        for (var j = 2; j < asRow.length; j ++)
-        {
-            var sTemp = "<td" + asRow[j];
-            var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
+      var sTemp = "<td" + asRow[j];
+      var sData = sTemp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, "_");
 
-            if (sTemp.indexOf("<img") > 0)
-            {
-                var asTemp2 = sTemp.split("\"");
-                sData = asTemp2[1] + "_" + asTemp2[3];
-            }
-            
-            if (sTemp.indexOf("colspan=") > 0)
-            {
-                var iColspan = parseInt(sTemp.split("\"")[1]); 
-                
-                for (var k = 0; k < iColspan; k ++)
-                {
-                    asData[asData.length] = sData;
-                }
-            }
-            else
-            {
-                asData[asData.length] = sData;
-            }
-            
-            
+      if (sTemp.indexOf("<img") > 0)
+      {
+        var asTemp2 = sTemp.split("\"");
+        sData = asTemp2[1] + "_" + asTemp2[3];
+      }
+      
+      if (sTemp.indexOf("colspan=") > 0)
+      {
+        var iColspan = parseInt(sTemp.split("\"")[1]); 
+        
+        for (var k = 0; k < iColspan; k ++)
+        {
+          asData[asData.length] = sData;
         }
-        
-        console.log( i + "," + j + " : " + asData);
-        
-        aasFutureRainData[i - 1] = asData;
+      }
+      else
+      {
+        asData[asData.length] = sData;
+      }
+      
+      
     }
     
-    return aasFutureRainData;
+    console.log( i + "," + j + " : " + asData);
+    
+    aasFutureRainData[i - 1] = asData;
+  }
+  
+  return aasFutureRainData;
 }
 
 function parseGovData(sText)
@@ -154,14 +154,14 @@ function parseGovData(sText)
 		var text = temp.replace( /<[^<>]+>/g, " " ).trim().replace(/\s+/g, ",");
 		
 		var index = 0;
-        var bFound = false;
+    var bFound = false;
 
 		for (index = 0; index < asUsedLocation.length; index++)
 		{
 			if (asUsedLocation[index] && text.indexOf(asUsedLocation[index]) == 0)
 			{
 				//console.log("#" + index + ":" + asUsedLocation[index]);
-                bFound = true;
+        bFound = true;
 				break;
 			}
 		}
@@ -173,7 +173,7 @@ function parseGovData(sText)
 			gasUpdateData[index] = [];
 			//console.log("#" + index + "_" + asUsedLocation[index]);
 		}
-        
+    
 		var j = gasUpdateData[index].length;
 		gasUpdateData[index][j] = text;
 		
@@ -185,13 +185,13 @@ function getGovDataInfo(sID)
 {
 	for (var i = 0; i < gasUpdateData.length; i ++)
 	{
-        for (var j = 0; j < gasUpdateData[i].length; j ++)
-        {
-            if (gasUpdateData[i][j].indexOf(sID) > 0)
-            {
-                return gasUpdateData[i][j];
-            }
-        }
+    for (var j = 0; j < gasUpdateData[i].length; j ++)
+    {
+      if (gasUpdateData[i][j].indexOf(sID) > 0)
+      {
+        return gasUpdateData[i][j];
+      }
+    }
 	}
 	
 	return null;
@@ -199,26 +199,26 @@ function getGovDataInfo(sID)
 
 function paserRainfallData(sKeyword)
 {
-    var aData = [];
+  var aData = [];
 	for (var i = 0; i < gasUpdateData.length; i ++)
 	{
-        for (var j = 0; j < gasUpdateData[i].length; j ++)
-        {
-            if (gasUpdateData[i][j].indexOf(sKeyword) >= 0)
-            {
-                var iLast = aData.length;
-                aData[iLast] = parseRainfallData(iLast, gasUpdateData[i][j], isNightNow());
-            }
-        }
-	}
-    
-    console.log("paserRainfallData : found " + aData.length + " data by " + sKeyword);
-    
-    if (aData && aData[0])
+    for (var j = 0; j < gasUpdateData[i].length; j ++)
     {
-        gsRainPastRecord = aData[0].description;
-        gsRainPastIcon = aData[0].icon;
+      if (gasUpdateData[i][j].indexOf(sKeyword) >= 0)
+      {
+        var iLast = aData.length;
+        aData[iLast] = parseRainfallData(iLast, gasUpdateData[i][j], isNightNow());
+      }
     }
+	}
+  
+  console.log("paserRainfallData : found " + aData.length + " data by " + sKeyword);
+  
+  if (aData && aData[0])
+  {
+    gsRainPastRecord = aData[0].description;
+    gsRainPastIcon = aData[0].icon;
+  }
 }
 
 /*
@@ -233,227 +233,375 @@ function paserRainfallData(sKeyword)
 
 var parseRainfallData = function(iNo, sOriginData, bIsNight)
 {
-    var asOriginData = sOriginData.split(",");
-    
-    var sLocation = asOriginData[0] + "," + asOriginData[1];
-    
-    
-    var i10MinRainfall = parseInt(asOriginData[3]) | 0;
-    var i1HourRainfall = parseInt(asOriginData[4]) | 0;
-    var i3HourRainfall = parseInt(asOriginData[5]) | 0;
-    var i6HourRainfall = parseInt(asOriginData[6]) | 0;
-    var i12HourRainfall = parseInt(asOriginData[7]) | 0;
-    var i24HourRainfall = parseInt(asOriginData[8]) | 0;
-    var sDescription = "累積雨量 : " + i10MinRainfall + "(10min) -> " + i1HourRainfall + "(1hr) -> " + i3HourRainfall + "(3hr) -> " + i6HourRainfall + "(6hr) -> " + i12HourRainfall + "(12hr) -> " + i24HourRainfall + "(24hr)";
-    
-    var sIcon;
-    
-    if (i24HourRainfall >= 80 || i1HourRainfall >= 40)
-    {
-        sIcon = getRailfallIcon(4, bIsNight);
-    }
-    else if (i10MinRainfall > 0)
-    {
-        sIcon = getRailfallIcon(3, bIsNight);
-    }
-    else if (i1HourRainfall > 0)
-    {
-        sIcon = getRailfallIcon(1, bIsNight);
-    }
-    else 
-    {
-        sIcon = getRailfallIcon(0, bIsNight);
-    }
-    
-    return {
-        id: iNo,
-        location: sLocation,
-        description: sDescription,
-        icon: sIcon
-    };
+  var asOriginData = sOriginData.split(",");
+  
+  var sLocation = asOriginData[0] + "," + asOriginData[1];
+  
+  
+  var i10MinRainfall = parseInt(asOriginData[3]) | 0;
+  var i1HourRainfall = parseInt(asOriginData[4]) | 0;
+  var i3HourRainfall = parseInt(asOriginData[5]) | 0;
+  var i6HourRainfall = parseInt(asOriginData[6]) | 0;
+  var i12HourRainfall = parseInt(asOriginData[7]) | 0;
+  var i24HourRainfall = parseInt(asOriginData[8]) | 0;
+  var sDescription = "累積雨量 : " + i10MinRainfall + "(10min) -> " + i1HourRainfall + "(1hr) -> " + i3HourRainfall + "(3hr) -> " + i6HourRainfall + "(6hr) -> " + i12HourRainfall + "(12hr) -> " + i24HourRainfall + "(24hr)";
+  
+  var sIcon;
+  
+  if (i24HourRainfall >= 80 || i1HourRainfall >= 40)
+  {
+    sIcon = getRailfallIcon(4, bIsNight);
+  }
+  else if (i10MinRainfall > 0)
+  {
+    sIcon = getRailfallIcon(3, bIsNight);
+  }
+  else if (i1HourRainfall > 0)
+  {
+    sIcon = getRailfallIcon(1, bIsNight);
+  }
+  else 
+  {
+    sIcon = getRailfallIcon(0, bIsNight);
+  }
+  
+  return {
+    id: iNo,
+    location: sLocation,
+    description: sDescription,
+    icon: sIcon
+  };
 }
 
 var fClickUpdate = function()
 {
-    console.log("Update !");
-    requestNewRainfall();
-    
+  console.log("Update !");
+  requestNewRainfall();
+  
 }
 
 var fSearchLocation = function()
 {
-    buildRainfallData();
-    
-    var sText = getGovDataInfo(GOV_DATA[1][2]);
-    
-    console.log("[fSearchLocation]OLD:" + GOV_DATA[1][2]);
-    console.log("[fSearchLocation]NEW:" + sText);
-    
-    return sText;
+  buildRainfallData();
+  
+  var sText = getGovDataInfo(GOV_DATA[1][2]);
+  
+  console.log("[fSearchLocation]OLD:" + GOV_DATA[1][2]);
+  console.log("[fSearchLocation]NEW:" + sText);
+  
+  return sText;
 }
 
 var buildRainfallData = function()
 {
-    parseGovData(GOV_TEXT);
+  parseGovData(GOV_TEXT);
 	
 	console.log("[buildRainfallData]Total location: " + gasUpdateData.length);
 }
 
 var getRainfallInfo = function(sKeyword) {
-    
-    console.log("getRainfallInfo : " + sKeyword);
+  
+  console.log("getRainfallInfo : " + sKeyword);
 
-    return getGovDataInfo(sKeyword);
+  return getGovDataInfo(sKeyword);
 }
 
 var getRailfallIcon = function(iLevel, bIsNight)
 {
-    var asDayIcon = ["ion-ios-sunny-outline", "ion-ios-partlysunny-outline", "ion-ios-cloudy-outline", "ion-ios-rainy-outline", "ion-ios-thunderstorm-outline"];
-    
-    var asNightIcon = ["ion-ios-moon-outline", "ion-ios-cloudy-night-outline", "ion-ios-cloudy-outline", "ion-ios-rainy-outline", "ion-ios-thunderstorm-outline"];
-    
-    var sIcon = bIsNight ? asNightIcon[iLevel] : asDayIcon[iLevel];
-    
-    console.log("getRailfallIcon : " + sIcon);
-    
-    return sIcon;
+  var asDayIcon = ["ion-ios-sunny-outline", "ion-ios-partlysunny-outline", "ion-ios-cloudy-outline", "ion-ios-rainy-outline", "ion-ios-thunderstorm-outline"];
+  
+  var asNightIcon = ["ion-ios-moon-outline", "ion-ios-cloudy-night-outline", "ion-ios-cloudy-outline", "ion-ios-rainy-outline", "ion-ios-thunderstorm-outline"];
+  
+  var sIcon = bIsNight ? asNightIcon[iLevel] : asDayIcon[iLevel];
+  
+  console.log("getRailfallIcon : " + sIcon);
+  
+  return sIcon;
 }
 
 var isNightNow = function() {
-    
-    return false;
+  
+  return false;
 }
 
 function sendHttpRequest(sUrl, onReadyFunction)
 {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = onReadyFunction;
-    xhr.open("GET", sUrl, true);
-    xhr.send();
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = onReadyFunction;
+  xhr.open("GET", sUrl, true);
+  xhr.send();
 }
 
 function requestNewRainfall(fDoneFunction)
 {
-    var sUrl = "http://www.cwb.gov.tw/V7/observe/rainfall/A136.htm";
-    sendHttpRequest(sUrl, fDoneFunction);
+  var sUrl = "http://www.cwb.gov.tw/V7/observe/rainfall/A136.htm";
+  sendHttpRequest(sUrl, fDoneFunction);
 }
 
 function parseRainfall(sResponseText)
 {
-    parseGovData(sResponseText);
-    console.log("parse New Railfall done");
+  parseGovData(sResponseText);
+  console.log("parse New Railfall done");
 }
 
 function requestGPS(sExtra, fFindRainfall)
-{    
-    gasTargetGPS = null; // init
+{  
+  gasTargetGPS = null; // init
+  
+  var sMapHost = "http://goo.gl/maps/";
+  var sUrl;
+  
+  sExtra = sExtra.trim();
+  
+  if (sExtra.indexOf(sMapHost) > 0)
+  {
+    var iBegin = sExtra.indexOf(sMapHost);
+    var iEnd = sExtra.length;
     
-    var sMapHost = "http://goo.gl/maps/";
-    var sUrl;
-    
-    sExtra = sExtra.trim();
-    
-    if (sExtra.indexOf(sMapHost) > 0)
-    {
-        var iBegin = sExtra.indexOf(sMapHost);
-        var iEnd = sExtra.length;
-        
-        sUrl = sExtra.substring(iBegin, iEnd);
-    }
-    else
-    {
-        var sKeyword = sExtra.split(" ")[0];
-        sUrl = "https://www.google.com.tw/maps/place/" + encodeURIComponent(sKeyword);
-    }
+    sUrl = sExtra.substring(iBegin, iEnd);
+  }
+  else
+  {
+    var sKeyword = sExtra.split(" ")[0];
+    sUrl = "https://www.google.com.tw/maps/place/" + encodeURIComponent(sKeyword);
+  }
 
-    sendHttpRequest(sUrl, fFindRainfall);
+  sendHttpRequest(sUrl, fFindRainfall);
 }
 
 function parseGPS(sResponseText)
 {
-    console.log("LEN:" + sResponseText.length);
-    
-    var iBegin = sResponseText.indexOf("[[[") + 3;
-    var iEnd = sResponseText.indexOf("]", iBegin);
-    var asTemps = sResponseText.substring(iBegin, iEnd).split(",");
-    
-    gasTargetGPS = [asTemps[2], asTemps[1]];
+  console.log("LEN:" + sResponseText.length);
+  
+  
+  
+  var iBegin = sResponseText.indexOf("[[[") + 3;
+  var iEnd = sResponseText.indexOf("]", iBegin);
+  var asTemps = sResponseText.substring(iBegin, iEnd).split(",");
+  
+  for (var i = 0; i < 3; i ++)
+  {
+    if (asTemps[i].length > 9)
+    {
+      asTemps[i] = asTemps[i].substring(0, 9);
+    }
+  }
 
-    console.log("parse GPS done : " + asTemps[2] + "," + asTemps[1]);
+  gasTargetGPS = [asTemps[2], asTemps[1]];
+  
+  console.log("parse GPS done : " + asTemps[2] + "," + asTemps[1]);
+
+  console.log(sResponseText);
+  
+  console.log("Screen: width:" + window.innerWidth + ",Height:" + window.innerHeight);
+  var iWidth = parseInt(window.innerWidth * 0.8);
+  var iHeight = parseInt(window.innerHeight * 0.2);
+  console.log("Pic: width:" + iWidth + ",Height:" + iHeight);
+  
+  // change the location name
+  var sGPS = ",[" + asTemps[2] + "," + asTemps[1] + "],";
+  
+  if (sResponseText.indexOf(sGPS) > 0)
+  {
+    iEnd = sResponseText.indexOf(sGPS);
+    iEnd = sResponseText.lastIndexOf("\"", iEnd);
+    iBegin = sResponseText.lastIndexOf("\"", iEnd - 1) + 1;
+    var sNewLocation = sResponseText.substring(iBegin, iEnd);
+    console.log("New Location name : " + sNewLocation);
+    
+    gsCurrentLocationName = sNewLocation;
+  }
+    
+  
+  
+  iBegin = sResponseText.indexOf("//geo0.ggpht.com/cbk");
+  iEnd = sResponseText.indexOf("\"", iBegin);
+
+  if (iEnd > iBegin && iBegin > 10)
+  {
+    var sTemp = sResponseText.substring(iBegin, iEnd);
+    sTemp = "https:" + sTemp.replace(/\\u0026/g, "&");
+    
+    var sFirst = sTemp.split("&w=")[0];
+    var sLast = sTemp.split("&yaw=")[1];
+    
+    gsSnapshotUrl = sFirst + "&w=" + iWidth + "&h=" + iHeight + "&yaw=" + sLast;
+    
+    console.log("Snapshot url 1:" + gsSnapshotUrl);
+    
+    // http://www.google.com/cbk?cb_client=search.TACTILE\u0026output=report\u0026panoid=F_kCflnDxtJYpjJLbqmMDg https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=F_kCflnDxtJYpjJLbqmMDg&w=288&h=113&yaw=347&pitch=0&thumbfov=120&ll=24.0753,120.4305
+  }
+  else
+  {
+
+    if (sResponseText.indexOf("u0026panoid") < 0)
+    {
+      return;
+    }
+    
+    iBegin = sResponseText.indexOf("u0026panoid");
+    iBegin = sResponseText.indexOf("=", iBegin) + 1;
+    iEnd = sResponseText.indexOf("\"", iBegin);
+    var sPanoid = sResponseText.substring(iBegin, iEnd);
+    console.log("Exist panoid : " + sPanoid);
+
+    gsSnapshotUrl = "https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=" + sPanoid + "&w=" + iWidth + "&h=" + iHeight + "yaw=347&pitch=0&thumbfov=120&ll=" + asTemps[2] + "," + asTemps[1];
+
+    console.log("Snapshot url 2:" + gsSnapshotUrl);
+  }
+
+  
 }
 
 function setExtra(fDoneFunction, fFailFunction)
 {
-    if (!window.plugins || !window.plugins.webintent)
-    {
-        return;
-    }
-    
-    window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
-        /*
-        function(sExtra) {
-            // url is the value of EXTRA_TEXT
-            console.log("EXTRA_TEXT:" + sExtra);
-            
-            gsExtra = sExtra;
-        }*/
-        fDoneFunction, 
-        fFailFunction);
+  if (!window.plugins || !window.plugins.webintent)
+  {
+    return;
+  }
+  
+  window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
+    /*
+    function(sExtra) {
+      // url is the value of EXTRA_TEXT
+      console.log("EXTRA_TEXT:" + sExtra);
+      
+      gsExtra = sExtra;
+    }*/
+    fDoneFunction, 
+    fFailFunction);
 }
 
 function getRedirectUrl(sUrl)
 {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function(e){
-        var headers = xhr.getAllResponseHeaders().toLowerCase();
-        alert(headers);
-    }
-    xhr.open("GET", sUrl, true);
-    xhr.send();
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function(e){
+    var headers = xhr.getAllResponseHeaders().toLowerCase();
+    alert(headers);
+  }
+  xhr.open("GET", sUrl, true);
+  xhr.send();
 }
 
 function addJS( sJsFile, fDoneFunction )
 { 
-    var oScript = document.createElement("script");
+  var oScript = document.createElement("script");
 
-    if ( oScript.onreadystatechange != undefined )
-    {
-        oScript.type = "text/javascript";
-        oScript.src = sJsFile;
-        oScript.onreadystatechange = function() {
-            if (this.readyState == 'complete') 
-            {
-                //alert( "complete :" + gsCurrentBasicIntroduction );
-                fDoneFunction();
-            }
-            else if (this.readyState == 'loaded') 
-            {
-                fDoneFunction();
-            }
-        };
-        //head.appendChild(oScript);
-        document.head.appendChild(oScript);
-    }
-    else
-    {
-        oScript.type = "text/javascript";
-        oScript.src = sJsFile;
-        oScript.async = true;
-        //oHead.appendChild( oScript);
-        oScript.onload = fDoneFunction;
-        document.head.appendChild(oScript);
-        //unlockWait();
-    }
+  if ( oScript.onreadystatechange != undefined )
+  {
+    oScript.type = "text/javascript";
+    oScript.src = sJsFile;
+    oScript.onreadystatechange = function() {
+      if (this.readyState == 'complete') 
+      {
+        //alert( "complete :" + gsCurrentBasicIntroduction );
+        fDoneFunction();
+      }
+      else if (this.readyState == 'loaded') 
+      {
+        fDoneFunction();
+      }
+    };
+    //head.appendChild(oScript);
+    document.head.appendChild(oScript);
+  }
+  else
+  {
+    oScript.type = "text/javascript";
+    oScript.src = sJsFile;
+    oScript.async = true;
+    //oHead.appendChild( oScript);
+    oScript.onload = fDoneFunction;
+    document.head.appendChild(oScript);
+    //unlockWait();
+  }
 }
 
 function clickKeyword()
 {
-    $ionicPopup.prompt({
-        title: 'Password Check',
-        template: 'Enter your secret password',
-        inputType: 'password',
-        inputPlaceholder: 'Your password'
-        }).then(function(res) {
-        console.log('Your password is', res);
-    });
+  $ionicPopup.prompt({
+    title: 'Password Check',
+    template: 'Enter your secret password',
+    inputType: 'password',
+    inputPlaceholder: 'Your password'
+    }).then(function(res) {
+    console.log('Your password is', res);
+  });
+}
+
+function addFavourite(sLocation, asGps, sImageUrl)
+{
+  if (!asGps || asGps.length != 2)
+  {
+    asGps = ["X", "X"];
+  }
+  var iNo = gaFavouriteDataArray.length;
+  var favouriteData = {
+        id: iNo,
+        location: sLocation, 
+        gps1: asGps[0], 
+        gps2: asGps[1],
+        snapshotUrl: sImageUrl};
+        
+  gaFavouriteDataArray[iNo] = favouriteData;
+
+  console.log("Add " + iNo + " : " + sLocation);
+}
+
+function getFavouriteIndex(sLocation, asGps)
+{
+  if (!asGps || asGps.length != 2)
+  {
+    asGps = ["X", "X"];
+  }
+  for (var i = 0; i < gaFavouriteDataArray.length; i ++)
+  {
+    if (!gaFavouriteDataArray[i])
+    {
+      continue;
+    }
+    if (gaFavouriteDataArray[i].location == sLocation && 
+        asGps && gaFavouriteDataArray[i].gps1 == asGps[0] &&
+        gaFavouriteDataArray[i].gps2 == asGps[1])
+    {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+function deleteFavourite(sLocation, asGps)
+{
+  var iFavouriteIndex = getFavouriteIndex(sLocation, asGps);
+
+  if (iFavouriteIndex >= 0)
+  {
+    gaFavouriteDataArray[iFavouriteIndex] = null;
+    console.log("Deletee " + iFavouriteIndex + " : " + sLocation);
+  }
+  else
+  {
+    console.log(sLocation + " cannot be found !!");
+  }
+}
+
+
+function addHistory(sLocation, asGps, sImageUrl)
+{
+  if (!asGps || asGps.length != 2)
+  {
+    asGps = ["X", "X"];
+  }
+  var iNo = gaHistoryDataArray.length;
+  var historyData = {
+        id: iNo,
+        location: sLocation, 
+        gps1: asGps[0], 
+        gps2: asGps[1],
+        snapshotUrl: sImageUrl};
+        
+  gaHistoryDataArray[iNo] = historyData;
+
+  console.log("Add " + iNo + " : " + sLocation);
 }

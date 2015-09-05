@@ -1,19 +1,7 @@
-<ion-view view-title="最新資訊">
-
-  <ion-content class="padding">
-    <div class="row">
-      <div class="col text-center">
-        <button ng-click="clickUpdate()" class="button right button-icon icon ion-refresh"></button>
-      </div>
-      <div class="col text-center">
-        <button ng-click="clickSearchIcon()" class="button right button-icon icon ion-search"></button>
-      </div>
-      <div class="col text-center">
-        <button ng-click="clickFavouriteIcon()" class="button right button-icon icon ion-star"></button>
-      </div>
-    </div>
-  
-    <h2>{{text}}</h2>
+<ion-view view-title="天氣資訊">
+  <ion-content>
+    
+      <h2>{{text}}</h2>
     
     <div class="quote" ng-if="!rainPastLoaded2">
         <a class="item item-icon-right" href="">
@@ -21,7 +9,7 @@
         </a>
     </div>
     <div ng-if="rainPastLoaded2">
-    <a class="item item-icon-left item-icon-right" href="#/tab/new/past">
+    <a class="item item-icon-left item-icon-right" href="#/app/info/past" ng-click="goInfoPast()">
       <i class="icon ion-android-done"></i>
       天氣記錄
       <i class="icon ion-arrow-right-c"></i>
@@ -36,7 +24,7 @@
       </a>
     </div>
     <div ng-if="rainFutureLoaded2">
-    <a class="item item-icon-left item-icon-right" href="#/tab/new/future">
+    <a class="item item-icon-left item-icon-right" href="#/app/info/future" ng-click="goInfoFuture">
       <i class="icon ion-android-done"></i>
       天氣預測
       <i class="icon ion-arrow-right-c"></i>
@@ -52,6 +40,10 @@
       <div class="item item-body" ng-if="locationLoaded">
         <p>目標名稱: {{currentLocationName}}</p>
         <p>目標地點: {{currentLocationGPS}}</p>
+      </div>
+      
+      <div class="item item-body" ng-if="snapshotUrl != null">
+      <img ng-src="{{snapshotUrl}}" ng-click="goGoogleMap()">
       </div>
     </div>
     
@@ -97,5 +89,7 @@
         <p>距離: {{rainFutureStationDistance}}</p>
       </div>
     </div>
+    
+    
   </ion-content>
 </ion-view>

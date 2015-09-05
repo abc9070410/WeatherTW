@@ -13,10 +13,26 @@ var gbPlatformReady = false;
 
 
 // tab-new
+var gsSnapshotUrl = null;
 var gsExtra = null;
 var gsCurrentLocationName = null;
 var gsRainPastRecord = null;
 var gsRainPastIcon = null;
+var gaHistoryDataArray = [];
+                /*[{
+                id: "編號",
+                location: "名稱", 
+                gps1: "經度", 
+                gps2: "緯度", 
+                snapshotUrl: "照片"}];*/
+var gaFavouriteDataArray = [];
+                /*[{
+                id: "編號",
+                location: "名稱", 
+                gps1: "經度", 
+                gps2: "緯度", 
+                snapshotUrl: "照片"}];*/
+
 var gaPastDataArray = [{
                 rainPastTime: "時間", 
                 rainPastTemperature: "溫度", 

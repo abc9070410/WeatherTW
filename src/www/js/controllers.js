@@ -1,16 +1,25 @@
 angular.module('starter.controllers', [])
 
-.controller('NewCtrl', function($scope, $state, $ionicLoading, $ionicPlatform, $ionicPopup) {
+
+.controller('InfoCtrl', function(
+  $rootScope, $scope, $state, $ionicLoading, $ionicPlatform, $ionicPopup, $ionicSideMenuDelegate) {
     
     $scope.pastDataArray = [];
     $scope.futureDataArray = [];
+    
+    $scope.snapshotUrl = null;
+    $scope.needAddHistory = false;
     
     $scope.locationLoaded = false;
     $scope.rainPastLoaded = false;
     $scope.rainPastLoaded2 = false;
     $scope.rainFutureLoaded = false;
     $scope.rainFutureLoaded2 = false;
-    
+
+    $scope.toggleLeft = function() {
+        console.log("toggleLeft");
+        $ionicSideMenuDelegate.toggleLeft();
+    };
     
     $scope.clearFlag = function() {
         $scope.locationLoaded = false;
@@ -29,6 +38,7 @@ angular.module('starter.controllers', [])
         {
             $scope.currentLocationGPS = gasTargetGPS;
             $scope.currentLocationName = gsCurrentLocationName;
+            $scope.snapshotUrl = gsSnapshotUrl;
             $scope.locationLoaded = true;
             
             console.log("LocationName:" + $scope.currentLocationName);
@@ -71,7 +81,12 @@ angular.module('starter.controllers', [])
     $scope.loadDone = function() {
         $ionicLoading.hide();
     }
+    $scope.goGoogleMap = function() {
+      var sUrl = "https://www.google.com.tw/maps/place/" + encodeURIComponent($scope.currentLocationName);
+      window.open( sUrl, "_system" );
+    }
     $scope.clickUpdate = function() {
+        console.log("clickUpdate");
         /*
         // for test
         buildRainfallData();
@@ -87,6 +102,10 @@ angular.module('starter.controllers', [])
             var sKeyword = gsExtra ? gsExtra : $scope.currentLocationName;
             requestGPS(sKeyword, $scope.findRainfall);
         }
+        else
+        {
+          console.log("No location name");
+        }
     };
     $scope.findRainfall = function() {
         if ((this.readyState == 3 || this.readyState == 4) && 
@@ -94,9 +113,19 @@ angular.module('starter.controllers', [])
         {
             parseGPS(this.responseText);
             
+            $scope.currentLocationName = gsCurrentLocationName;
             $scope.currentLocationGPS = gasTargetGPS;
+            $scope.snapshotUrl = gsSnapshotUrl;
             $scope.locationLoaded = true;
             $scope.updatePage();
+            
+            if ($scope.needAddHistory)
+            {
+              addHistory(gsCurrentLocationName, gasTargetGPS, gsSnapshotUrl);
+              $scope.needAddHistory = false;
+            }
+            
+            //return;
             
             /* // 10 min rainfall information
             var i = getNearLocationIndex(GOV_DATA, gasTargetGPS[0], gasTargetGPS[1]);
@@ -162,10 +191,6 @@ angular.module('starter.controllers', [])
         $scope.rainPastLoaded = true;
     }
     
-    //$scope.clickSearch = fSearchLocation;
-    $scope.clickSearch = function() {
-    }
-    
     $scope.pastRainDone = function() {
         if (this.readyState == 4)
         {
@@ -227,55 +252,69 @@ angular.module('starter.controllers', [])
     
     $scope.makeFutureData = function() {
         
-        for (var i = 0; $scope.rainFutureTime && i < $scope.rainFutureTime.length; i ++)
-        {
-            var sTime = $scope.rainFutureDate[i] + "　　" + $scope.rainFutureTime[i];
-            var sIcon = "http://www.cwb.gov.tw" + $scope.rainFutureState[i].split("_")[0];
-            gaFutureDataArray[i+1] = {
-                rainFutureTime: sTime.replace("_", "　　"),
-                rainFutureTemperature: $scope.rainFutureTemperature[i],
-                rainFutureExistIcon: true,
-                rainFutureState: sIcon,
-                rainFutureRelative: $scope.rainFutureRelative[i],
-                rainFutureRate: $scope.rainFutureRate[i]
-            };
-        }
-        
-        console.log("makeFutureData:" + gaFutureDataArray.length);
-        
-        $scope.futureDataArray = gaFutureDataArray;
-        $scope.rainFutureLoaded2 = true;
+      for (var i = 0; $scope.rainFutureTime && i < $scope.rainFutureTime.length; i ++)
+      {
+          var sTime = $scope.rainFutureDate[i] + "　　" + $scope.rainFutureTime[i];
+          var sIcon = "http://www.cwb.gov.tw" + $scope.rainFutureState[i].split("_")[0];
+          gaFutureDataArray[i+1] = {
+              rainFutureTime: sTime.replace("_", "　　"),
+              rainFutureTemperature: $scope.rainFutureTemperature[i],
+              rainFutureExistIcon: true,
+              rainFutureState: sIcon,
+              rainFutureRelative: $scope.rainFutureRelative[i],
+              rainFutureRate: $scope.rainFutureRate[i]
+          };
+      }
+      
+      console.log("makeFutureData:" + gaFutureDataArray.length);
+      
+      $scope.futureDataArray = gaFutureDataArray;
+      $scope.rainFutureLoaded2 = true;
     }
     
     $scope.addJSDone = function() {
-        $scope.rainFutureStationRecord = MyLabel;
-        $scope.rainFutureLoaded = true;
-        
-        //$scope.loadDone();
-        //window.location.reload(true);
-        $scope.updatePage();
+      $scope.rainFutureStationRecord = MyLabel;
+      $scope.rainFutureLoaded = true;
+      
+      //$scope.loadDone();
+      //window.location.reload(true);
+      $scope.updatePage();
     }
     
     $scope.init = function() {
-        if (window.cordova)
-        {
-            //$scope.loadStart();
-            requestNewRainfall($scope.requestRailfallDone);
-        }
-        
-        // test 
-        //parseTownFutureRain(RAIN_TEXT);
-        //parseTownPastRain(PAST_24HR_TEMP);
-        //addJS("http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js", $scope.addJSDone);
+      if (window.cordova)
+      {
+          //$scope.loadStart();
+          requestNewRainfall($scope.requestRailfallDone);
+      }
+      
+      $rootScope.$broadcast("enableAllIcon"); 
+      
+      // test 
+      //parseTownFutureRain(RAIN_TEXT);
+      //parseTownPastRain(PAST_24HR_TEMP);
+      //addJS("http://www.cwb.gov.tw/V7/forecast/town368/3Hr/plot/6801100_3Hr.js", $scope.addJSDone);
     }
     
     $scope.requestRailfallDone = function() {
-        if (this.readyState == 4) 
+      if (this.readyState == 4) 
+      {
+        parseRainfall(this.responseText);
+        
+        if (gsCurrentLocationName)
         {
-            parseRainfall(this.responseText);
-            
-            $scope.checkExtra();
+          $scope.findLocationInfo(gsCurrentLocationName);
         }
+        else
+        {
+          $scope.checkExtra();
+        }
+      }
+    }
+    
+    $scope.findLocationInfo = function(sKeyword) {
+      $scope.currentLocationName = gsCurrentLocationName;
+      requestGPS(sKeyword, $scope.findRainfall);
     }
     
     $scope.checkExtra = function() {
@@ -293,9 +332,8 @@ angular.module('starter.controllers', [])
             
             gsExtra = sExtra;
             gsCurrentLocationName = sExtra.trim().split("http:")[0];
-            $scope.currentLocationName = gsCurrentLocationName;
             
-            requestGPS(sExtra, $scope.findRainfall);
+            $scope.findLocationInfo(sExtra);
         },
         function() {
             console.log("no Extra");
@@ -311,7 +349,16 @@ angular.module('starter.controllers', [])
         $scope.rainFutureLoaded = true;
         $scope.rainFutureLoaded2 = true;
         
-        $scope.updatePage();
+        //$scope.updatePage();
+    }
+    
+    $scope.goInfoPast = function() {
+      console.log("goInfoPast");
+      $rootScope.$broadcast("disableAllIcon"); 
+    }
+    $scope.goInfoFuture = function() {
+      console.log("goInfoFuture");
+      $rootScope.$broadcast("disableAllIcon"); 
     }
     
     $scope.updatePage = function() {
@@ -329,15 +376,22 @@ angular.module('starter.controllers', [])
         {
             $scope.checkExtra();
         }
+        
+        if (!window.cordova)
+        {
+            console.log("Not on device");
+            
+            $scope.noLoaded();
+        }
     });
     
     $scope.$on('$ionicView.enter', function(e) {
-        console.log("Enter NewCtrl");
+        console.log("Enter infoCtrl");
         
         $scope.init();
     });
     
-    $scope.clickSearchIcon = function() {
+    $scope.searchLocation = function() {
         $ionicPopup.prompt({
             title: '天氣查詢',
             template: '  ',
@@ -347,6 +401,8 @@ angular.module('starter.controllers', [])
                 console.log('location is', res);
                 if (res)
                 {
+                   $scope.needAddHistory = true;
+                  
                     gsCurrentLocationName = res;
                     $scope.currentLocationName = res;
                     requestGPS(res, $scope.findRainfall);
@@ -354,84 +410,246 @@ angular.module('starter.controllers', [])
         });
     }
     
-    $scope.clickFavouriteIcon = function() {
-        if (!$scope.currentLocationName)
-        {
-            console.log("not exist location name");
-            return;
-        }
-        
-        var confirmPopup = $ionicPopup.confirm({
-        title: '加入常用地點',
-        template: '是否要加入 ' + $scope.currentLocationName + ' ?'
-        });
-        
-        confirmPopup.then(function(res) {
-            if(res) {
-            console.log('You are sure');
-            } else {
-            console.log('You are not sure');
-            }
-        });
-     };
+    $scope.$on("updatePage", function() {
+      console.log("receive updatePage");
+      $scope.clickUpdate();
+      
+    });
+    
+    
+    $scope.$on("searchLocation", function() {
+      console.log("receive searchLocation");
+      $scope.searchLocation();
+    });
+    
+     
 })
 
-.controller('NewPastCtrl', function($scope) {
+.controller('InfoPastCtrl', function($scope) {
   $scope.pastDataArray = gaPastDataArray;
 })
-.controller('NewFutureCtrl', function($scope) {
+.controller('InfoFutureCtrl', function($scope) {
   $scope.futureDataArray = gaFutureDataArray;
 })
 
-.controller('SearchCtrl', function($scope, $state, Chats) {
+
+
+.controller('AppCtrl', function(
+  $rootScope, $scope, $state, $ionicModal, $timeout, $ionicPlatform, $ionicPopup) {
+
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
   // listen for the $ionicView.enter event:
-  //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
   
-  $scope.prevInputKeyword = "";
+  $scope.favouriteExisted = false;
+  $scope.showSearchIcon;
+  $scope.showFavouriteIcon;
+  $scope.showRefreshIcon;
 
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
+  // Form data for the login modal
+  $scope.loginData = {};
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/search.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+
+  // Triggered in the login modal to close it
+  $scope.closeLogin = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.login = function() {
+    $scope.modal.show();
+  };
+
+  // Perform the login action when the user submits the login form
+  $scope.doLogin = function() {
+    console.log('Doing login', $scope.loginData);
+
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeLogin();
+    }, 1000);
   };
   
-  $scope.clickUpdate = fClickUpdate;
-  $scope.onSearchChange = function(inputKeyword) {
-      console.log("onSearchChange: " + inputKeyword);
+  $scope.enableAllIcon = function() {
+    $scope.favouriteExisted = getFavouriteIndex(gsCurrentLocationName, gasTargetGPS) >= 0;
+    
+    $scope.showSearchIcon = true;
+    $scope.showFavouriteIcon = true;
+    $scope.showRefreshIcon = true;
+  }
+  
+  $scope.disableAllIcon = function() {
+    $scope.showSearchIcon = false;
+    $scope.showFavouriteIcon = false;
+    $scope.showRefreshIcon = false;
+  }
+  
+  $scope.goInfo = function() {
+    console.log("goInfo");
+    $scope.enableAllIcon();
+  }
+  
+  $scope.goHistory = function() {
+    console.log("goHistory");
+    $scope.disableAllIcon();
+  }
+  
+  $scope.goFavourite = function() {
+    console.log("goFavourite");
+    $scope.disableAllIcon();
+  }
+  
+  $scope.goOption = function() {
+    console.log("goOption");
+    $scope.disableAllIcon();
+  }
+  
+  $scope.clickSearchIcon = function() {
+    console.log("clickSearchIcon");
+    //$scope.login();
+    
+    $rootScope.$broadcast("searchLocation"); 
+  }
+  $scope.clickFavouriteIcon = function() {
+    console.log("clickFavouriteIcon");
+    
+    if (!gsCurrentLocationName)
+    {
+        console.log("not exist location name");
+        return;
+    }
+    
+    var sTitle = "加入最愛地點";
+    var sQuestion = "是否要加入 " + gsCurrentLocationName + " ?";
+    $scope.favouriteExisted = getFavouriteIndex(gsCurrentLocationName, gasTargetGPS) >= 0;
+    if ($scope.favouriteExisted)
+    {
+      sTitle = "移除最愛地點";
+      sQuestion = "是否要移除 " + gsCurrentLocationName + " ?";
+    }
+    
+    var confirmPopup = $ionicPopup.confirm({
+      title: sTitle,
+      template: sQuestion
+    });
+    
+    confirmPopup.then(function(res) {
+      if (res) {
+        console.log('You are sure');
+        
+        if ($scope.favouriteExisted)
+        {
+          deleteFavourite(gsCurrentLocationName, gasTargetGPS);
+          $scope.favouriteExisted = false;
+        }
+        else
+        {
+          addFavourite(gsCurrentLocationName, gasTargetGPS, gsSnapshotUrl);
+          $scope.favouriteExisted = true;
+        }
+      } else {
+        console.log('You are not sure');
+      }
+    });
+  }
+  $scope.clickRefreshIcon = function() {
+    console.log("clickRefreshIcon:");
+    $rootScope.$broadcast("updatePage"); 
+  }
+  
+  
+  $scope.init = function() {
+    console.log("Init");
+    
+  }
+  
+  $ionicPlatform.ready(function() {
+    console.log("ionicPlatform.ready");
+    $scope.enableAllIcon();
+  });
+
+  $scope.$on('$ionicView.enter', function(e) {
+      var sLocation = "" + window.location;
+      console.log("Enter AppCtrl:" + sLocation);
       
-      if (inputKeyword.length < 2)
+      if (sLocation.indexOf("browse") > 0)
       {
-          return;
+        $scope.showSearchIcon = true;
       }
       
-      $scope.chats = paserRainfallData(inputKeyword);
-      $scope.prevInputKeyword = inputKeyword;
-      
-      $scope.updatePage();
+      $scope.init();
+  });
+  
+  $scope.$on("disableAllIcon", function() {
+      console.log("receive disableAllIcon");
+      $scope.disableAllIcon();
+  });
+  $scope.$on("enableAllIcon", function() {
+      console.log("receive enableAllIcon");
+      $scope.enableAllIcon();
+  });
+  
+})
+
+.controller('PlaylistsCtrl', function($scope, $state) {
+  $scope.playlists = [
+    { title: 'Reggae', id: 1 },
+    { title: 'Chill', id: 2 },
+    { title: 'Dubstep', id: 3 },
+    { title: 'Indie', id: 4 },
+    { title: 'Rap', id: 5 },
+    { title: 'Cowbell', id: 6 }
+  ];
+  
+  $scope.goRight = function() {
+    console.log("goRight");
+    $state.go('app.option'); 
+  }
+  $scope.swipeDown = function() {
+    console.log("swipeDown");
   }
 })
 
-.controller('MarkCtrl', function($scope, Chats) {
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
+.controller('PlaylistCtrl', function($scope, $stateParams) {
+  
 })
 
-.controller('SearchDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
+.controller('FavouriteCtrl', function($scope, $stateParams) {
+  $scope.favouriteDataArray = gaFavouriteDataArray;
+  
+  $scope.clickFavourite = function(index) {
+    console.log("clickFavourite:" + index);
+    
+    gsCurrentLocationName = gaFavouriteDataArray[index].location;
+    gasTargetGPS = [gaFavouriteDataArray[index].gps1, gaFavouriteDataArray[index].gps2];
+    gsSnapshotUrl = gaFavouriteDataArray[index].snapshotUrl;
+  }
 })
 
-.controller('OptionCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('HistoryCtrl', function($scope, $stateParams) {
+  $scope.historyDataArray = gaHistoryDataArray;
+  
+  $scope.clickHistory = function(index) {
+    console.log("clickHistory:" + index);
+    
+    gsCurrentLocationName = gaHistoryDataArray[index].location;
+    gasTargetGPS = [gaHistoryDataArray[index].gps1, gaHistoryDataArray[index].gps2];
+    gsSnapshotUrl = gaHistoryDataArray[index].snapshotUrl;
+  }
 });
+
+
+
 
 /*
 chrome://inspect/#devices
@@ -449,6 +667,8 @@ http://www.cwb.gov.tw/V7/forecast/town368/24GTPast/6801300.htm
 過去24小時天氣紀錄
 http://www.cwb.gov.tw/V7/observe/24real/Data/46757.htm
 http://www.cwb.gov.tw/V7/observe/real/ALL.htm
+
+http://www.cwb.gov.tw/V7/symbol/weather/gif/day/36.gif
 
 
 // Libary Search :

@@ -3,133 +3,108 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic', 'starter.controllers'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+    if (window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
 
     }
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
-      StatusBar.styleLightContent();
-    }
-    
-    if (window.cordova)
-    {
-        console.log("Device Ready");
-        //setExtra();
-        //requestNewRainfall();
-        
-        if (!gbExtraChecked)
-        {
-            console.log("Not check extra yet..");
-        }
+      StatusBar.styleDefault();
     }
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
-
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
   $stateProvider
 
-  // setup an abstract state for the tabs directive
-    .state('tab', {
+    .state('app', {
     cache: false,
-    url: '/tab',
+    url: '/app',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/menu.html',
+    controller: 'AppCtrl'
   })
 
-  // Each tab has its own nav history stack:
-
-  .state('tab.new', {
-    cache: false,
-    url: '/new',
-    views: {
-      'tab-new': {
-        templateUrl: 'templates/tab-new.html',
-        controller: 'NewCtrl'
-      }
-    }
-  })
-  
-  .state('tab.new-past', {
-    cache: false,
-    url: '/new/past',
-    views: {
-      'tab-new': {
-        templateUrl: 'templates/tab-new-past.html',
-        controller: 'NewPastCtrl'
-      }
-    }
-  })
-  
-  .state('tab.new-future', {
-    cache: false,
-    url: '/new/future',
-    views: {
-      'tab-new': {
-        templateUrl: 'templates/tab-new-future.html',
-        controller: 'NewFutureCtrl'
-      }
-    }
-  })
-
-  .state('tab.search', {
-      cache: false,
-      url: '/search',
-      views: {
-        'tab-search': {
-          templateUrl: 'templates/tab-search.html',
-          controller: 'SearchCtrl'
-        }
-      }
-    })
-  .state('tab.search-detail', {
-      cache: false,
-      url: '/search/:chatId',
-      views: {
-        'tab-search': {
-          templateUrl: 'templates/search-detail.html',
-          controller: 'SearchDetailCtrl'
-        }
-      }
-    })
-
-  .state('tab.mark', {
-      cache: false,
-      url: '/mark',
-      views: {
-        'tab-mark': {
-          templateUrl: 'templates/tab-mark.html',
-          controller: 'MarkCtrl'
-        }
-      }
-    })
-	
-  .state('tab.option', {
-    cache: false,
+  .state('app.option', {
     url: '/option',
     views: {
-      'tab-option': {
-        templateUrl: 'templates/tab-option.html',
-        controller: 'OptionCtrl'
+      'menuContent': {
+        templateUrl: 'templates/option.html'
+      }
+    }
+  })
+
+  .state('app.info', {
+      url: '/info',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/info.html',
+          controller: 'InfoCtrl'
+        }
+      }
+    })
+    
+  .state('app.info-past', {
+    cache: false,
+    url: '/info/past',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/info-past.html',
+        controller: 'InfoPastCtrl'
+      }
+    }
+  })
+  
+  .state('app.info-future', {
+    cache: false,
+    url: '/info/future',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/info-future.html',
+        controller: 'InfoFutureCtrl'
+      }
+    }
+  })
+  
+  .state('app.history', {
+    url: '/history',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/history.html',
+        controller: 'HistoryCtrl'
+      }
+    }
+  })
+  
+  .state('app.favourite', {
+    url: '/favourite',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/favourite.html',
+        controller: 'FavouriteCtrl'
+      }
+    }
+  })
+    
+    
+
+  .state('app.single', {
+    url: '/favourite/:playlistId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/playlist.html',
+        controller: 'PlaylistCtrl'
       }
     }
   });
-
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/new');
-
+  $urlRouterProvider.otherwise('/app/info');
 });
