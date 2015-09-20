@@ -109,9 +109,7 @@ angular.module('starter.controllers', [])
     };
     $scope.findRainfall = function() {
         if (this.readyState == 4 || 
-            (this.readyState == 3 && 
-             this.responseText.indexOf("\"spotlight\"") > 0 &&
-             this.responseText.indexOf("//geo0.ggpht.com/cbk") > 0))
+            (this.readyState == 3 && this.responseText.indexOf("\"spotlight\"") > 0))
         {
             parseGPS(this.responseText);
             
@@ -228,6 +226,18 @@ angular.module('starter.controllers', [])
         console.log("makePastData:" + gaPastDataArray.length);
         
         $scope.pastDataArray = gaPastDataArray;
+        $scope.nearestPastStateImage = getNearestPastStateImage();
+        if (gaPastDataArray.length > 2)
+        {
+           var fRainfall = parseFloat(gaPastDataArray[1].rainPastRainfall) - parseFloat(gaPastDataArray[2].rainPastRainfall);
+           
+           if (fRainfall == 0)
+           {
+             fRainfall = 0.0;
+           }
+           
+           $scope.oneHourPastRainfall = fRainfall;
+        }
         $scope.rainPastLoaded2 = true;
     }
     

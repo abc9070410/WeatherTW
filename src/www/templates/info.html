@@ -1,6 +1,5 @@
 <ion-view view-title="天氣資訊">
   <ion-content>
-    
       <h2>{{text}}</h2>
     
     <div class="quote" ng-if="!rainPastLoaded2">
@@ -9,11 +8,24 @@
         </a>
     </div>
     <div ng-if="rainPastLoaded2">
+    <a class="item item-thumbnail-left" href="#/app/info/past">
+      <img src="{{nearestPastStateImage}}">
+      <h2>{{pastDataArray[1].rainPastTime}}</h2>
+      <p>溫度: {{pastDataArray[1].rainPastTemperature}}°C　相對溼度: {{pastDataArray[1].rainPastRelative}}%</p>
+      <p>今日累積雨量: {{pastDataArray[1].rainPastRainfall}} 毫米　</p>
+      <p>過去一小時累積雨量: {{oneHourPastRainfall}} 毫米　</p>
+    </a>
+    
+    <!--
     <a class="item item-icon-left item-icon-right" href="#/app/info/past" ng-click="goInfoPast()">
       <i class="icon ion-android-done"></i>
-      天氣記錄
+      {{pastDataArray[1].rainPastTime}}
+      {{pastDataArray[1].rainPastTemperature}}
+      {{pastDataArray[1].rainPastState}}
+      {{pastDataArray[1].rainPastRate}}
       <i class="icon ion-arrow-right-c"></i>
     </a>
+    -->
     </div>
     
     
@@ -24,11 +36,23 @@
       </a>
     </div>
     <div ng-if="rainFutureLoaded2">
+    
+    <a class="item item-thumbnail-left" href="#/app/info/future">
+      <img src="{{futureDataArray[1].rainFutureState}}">
+      <h2>{{futureDataArray[1].rainFutureTime}}</h2>
+      <p>溫度: {{futureDataArray[1].rainFutureTemperature}}°C　相對溼度: {{futureDataArray[1].rainFutureRelative}}</p>
+      <p>降雨機率: {{futureDataArray[1].rainFutureRate}}</p>
+    </a>
+    <!--
     <a class="item item-icon-left item-icon-right" href="#/app/info/future" ng-click="goInfoFuture">
       <i class="icon ion-android-done"></i>
-      天氣預測
+      {{futureDataArray[1].rainFutureTime}}
+      {{futureDataArray[1].rainFutureTemperature}}
+      {{futureDataArray[1].rainFutureState}}
+      {{futureDataArray[1].rainFutureRate}}
       <i class="icon ion-arrow-right-c"></i>
     </a>
+    -->
     </div>
     
   

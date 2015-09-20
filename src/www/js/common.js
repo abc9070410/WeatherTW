@@ -429,7 +429,6 @@ function parseGPS(sResponseText)
     
     console.log("Snapshot url 1:" + gsSnapshotUrl);
     
-    // http://www.google.com/cbk?cb_client=search.TACTILE\u0026output=report\u0026panoid=F_kCflnDxtJYpjJLbqmMDg https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=F_kCflnDxtJYpjJLbqmMDg&w=288&h=113&yaw=347&pitch=0&thumbfov=120&ll=24.0753,120.4305
   }
   else 
   { 
@@ -458,8 +457,10 @@ function parseGPS(sResponseText)
           
           if (sTemp.indexOf("https://plus.google.com/") == 0)
           {
+            sTemp = sTemp.split("/about")[0] + "/about";
+            
             console.log("Request : " + sTemp);
-            sendHttpRequest(sTemp, parsePicFromGooglePlus);
+            //sendHttpRequest(sTemp, parsePicFromGooglePlus);
           }
           
           /*
@@ -480,8 +481,12 @@ function parseGPS(sResponseText)
     
     if (!sPanoid)
     {
+      gsSnapshotUrl = "../www/img/GmapIcon.jpg";
       return;
     }
+    
+    
+    // example : https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=F_kCflnDxtJYpjJLbqmMDg&w=288&h=113&yaw=347&pitch=0&thumbfov=120&ll=24.0753,120.4305
 
     gsSnapshotUrl = "https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=" + sPanoid + "&w=" + iWidth + "&h=" + iHeight + "yaw=347&pitch=0&thumbfov=120&ll=" + asTemps[2] + "," + asTemps[1];
 
@@ -496,11 +501,15 @@ function parsePicFromGooglePlus()
   {
     var sResponseText = this.responseText;
     
+    console.log("-----------START----------");
+    console.log(sResponseText);
+    console.log("-----------END----------");
+    
     var iEnd = sResponseText.indexOf("/maps/vt/data=");
     iEnd = sResponseText.indexOf("\"", iEnd);
     var iBegin = sResponseText.lastIndexOf("\"") + 1;
     
-    gsSnapshotUrl = "https:" + sResponseText.substring(iBegin, iEnd);
+    //gsSnapshotUrl = "https:" + sResponseText.substring(iBegin, iEnd);
 
     console.log("Snapshot url 3:" + gsSnapshotUrl);
   }
@@ -704,3 +713,32 @@ function initData()
   console.log("Load Favourite Count : " + iFavouriteCount );
   console.log("Load History Count : " + iHistoryCount );
 }
+
+
+function getNearestPastStateImage()
+{
+  var asImageName = ["02.gif", "03.gif", "04.gif"];
+  var index = 0;
+  
+  var aiDiff = [ 
+    parseFloat(parseFloat(gaPastDataArray[1].rainPastRainfall) - parseFloat(gaPastDataArray[2].rainPastRainfall)),
+    parseFloat(parseFloat(gaPastDataArray[2].rainPastRainfall) - parseFloat(gaPastDataArray[3].rainPastRainfall)),
+    parseFloat(parseFloat(gaPastDataArray[3].rainPastRainfall) - parseFloat(gaPastDataArray[4].rainPastRainfall))
+    ];
+  
+  if (aiDiff[0] == 0 && aiDiff[1] == 0 && aiDiff[2] == 0 && gaPastDataArray[1].rainPastRainfall == 0)
+  {
+    index = 0;
+  }
+  else if (aiDiff[0] == 0 && gaPastDataArray[1].rainPastRainfall > 0)
+  {
+    index = 1;
+  }
+  else
+  {
+    index = 2;
+  }
+  
+  return "http://www.cwb.gov.tw/V7/symbol/weather/gif/day/" + asImageName[index];
+}
+
