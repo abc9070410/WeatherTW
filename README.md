@@ -1,6 +1,11 @@
 # WeatherTW
 A Android app about weather using Ionic
 
+## Main Feature
+
+- It could get the weather information for the specific place form Gmap :  
+- https://github.com/abc9070410/WeatherTW/blob/master/DEMO_1.md
+
 ## How to use
 
 1. install Ionic : http://ionicframework.com/getting-started/
@@ -27,7 +32,6 @@ A Android app about weather using Ionic
 3. type `ionic run --device android`
 4. run the APP on your device now
 
-## Main Feature
+## License
 
-get the weather information for the specific place form Gmap :  
-https://github.com/abc9070410/WeatherTW/blob/master/DEMO_1.md
+- The MIT License (http://opensource.org/licenses/MIT)
