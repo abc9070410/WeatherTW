@@ -431,26 +431,79 @@ function parseGPS(sResponseText)
     
     // http://www.google.com/cbk?cb_client=search.TACTILE\u0026output=report\u0026panoid=F_kCflnDxtJYpjJLbqmMDg https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=F_kCflnDxtJYpjJLbqmMDg&w=288&h=113&yaw=347&pitch=0&thumbfov=120&ll=24.0753,120.4305
   }
-  else
-  {
+  else 
+  { 
+    var sPanoid = null;
+    
+    if (sResponseText.indexOf("u0026panoid") > 0)
+    {
+      iBegin = sResponseText.indexOf("u0026panoid");
+      iBegin = sResponseText.indexOf("=", iBegin) + 1;
+      iEnd = sResponseText.indexOf("\"", iBegin);
+      sPanoid = sResponseText.substring(iBegin, iEnd);
+    }
+    else 
+    {
+      var asTemp = sResponseText.split(",");
+      var iCount = asTemp.length;
+      var sExamplePanoid = "sAQdAAkKXJA3jlhFGkhymA";
+      
+      for (var i = 0; i < iCount; i++)
+      {
+        var sTemp = asTemp[i].trim();
+        
+        if (sTemp[0] == "\"" && sTemp[sTemp.length - 1] == "\"")
+        {
+          sTemp = sTemp.substring(1, sTemp.length - 1);
+          
+          if (sTemp.indexOf("https://plus.google.com/") == 0)
+          {
+            console.log("Request : " + sTemp);
+            sendHttpRequest(sTemp, parsePicFromGooglePlus);
+          }
+          
+          /*
+          if (sTemp.length == sExamplePanoid.length)
+          {
+            sPanoid = sTemp;
+            console.log("MATCH: " + sTemp);
+            //break;
+          }
+          */
+          console.log("NOT MATCH: " + sTemp);
+        }
+        
+      }
+    }
 
-    if (sResponseText.indexOf("u0026panoid") < 0)
+    console.log("Exist panoid : " + sPanoid);
+    
+    if (!sPanoid)
     {
       return;
     }
-    
-    iBegin = sResponseText.indexOf("u0026panoid");
-    iBegin = sResponseText.indexOf("=", iBegin) + 1;
-    iEnd = sResponseText.indexOf("\"", iBegin);
-    var sPanoid = sResponseText.substring(iBegin, iEnd);
-    console.log("Exist panoid : " + sPanoid);
 
     gsSnapshotUrl = "https://geo0.ggpht.com/cbk?cb_client=maps_sv.lite_mobile&output=thumbnail&thumb=2&panoid=" + sPanoid + "&w=" + iWidth + "&h=" + iHeight + "yaw=347&pitch=0&thumbfov=120&ll=" + asTemps[2] + "," + asTemps[1];
 
     console.log("Snapshot url 2:" + gsSnapshotUrl);
-  }
+  } 
+}
 
-  
+function parsePicFromGooglePlus()
+{
+  if (this.readyState == 4 || 
+      (this.readyState == 3 && this.responseText.indexOf("/maps/vt/data=") > 0))
+  {
+    var sResponseText = this.responseText;
+    
+    var iEnd = sResponseText.indexOf("/maps/vt/data=");
+    iEnd = sResponseText.indexOf("\"", iEnd);
+    var iBegin = sResponseText.lastIndexOf("\"") + 1;
+    
+    gsSnapshotUrl = "https:" + sResponseText.substring(iBegin, iEnd);
+
+    console.log("Snapshot url 3:" + gsSnapshotUrl);
+  }
 }
 
 function setExtra(fDoneFunction, fFailFunction)
@@ -529,6 +582,20 @@ function clickKeyword()
   });
 }
 
+function removeFavourite(iNo)
+{
+  var iCount = gaFavouriteDataArray.length;
+  
+  for (var i = iNo + 1; i < iCount; i++)
+  {
+    gaFavouriteDataArray[i - 1] = gaFavouriteDataArray[i];
+  }
+  
+  removeFavouriteData(iNo);
+  
+  console.log("Remove Favourite " + iNo);
+}  
+
 function addFavourite(sLocation, asGps, sImageUrl)
 {
   if (!asGps || asGps.length != 2)
@@ -544,8 +611,10 @@ function addFavourite(sLocation, asGps, sImageUrl)
         snapshotUrl: sImageUrl};
         
   gaFavouriteDataArray[iNo] = favouriteData;
+  
+  setFavouriteData(favouriteData, iNo);
 
-  console.log("Add " + iNo + " : " + sLocation);
+  console.log("Add Favourite " + iNo + " : " + sLocation);
 }
 
 function getFavouriteIndex(sLocation, asGps)
@@ -571,14 +640,22 @@ function getFavouriteIndex(sLocation, asGps)
   return -1;
 }
 
-function deleteFavourite(sLocation, asGps)
+function removeFavourite(sLocation, asGps)
 {
   var iFavouriteIndex = getFavouriteIndex(sLocation, asGps);
 
   if (iFavouriteIndex >= 0)
   {
-    gaFavouriteDataArray[iFavouriteIndex] = null;
-    console.log("Deletee " + iFavouriteIndex + " : " + sLocation);
+    var iCount = gaFavouriteDataArray.length;
+    
+    for (var i = iFavouriteIndex + 1; i < iCount; i++)
+    {
+      gaFavouriteDataArray[i - 1] = gaFavouriteDataArray[i];
+    }
+    
+    removeFavouriteData(iFavouriteIndex);
+
+    console.log("Remove Favourite " + iFavouriteIndex + " : " + sLocation);
   }
   else
   {
@@ -602,6 +679,28 @@ function addHistory(sLocation, asGps, sImageUrl)
         snapshotUrl: sImageUrl};
         
   gaHistoryDataArray[iNo] = historyData;
+  
+  setHistoryData(historyData, iNo);
 
-  console.log("Add " + iNo + " : " + sLocation);
+  console.log("Add History " + iNo + " : " + sLocation);
+}
+
+function initData()
+{
+  var iFavouriteCount = getFavouriteCount();
+  
+  for (var i = 0; i < iFavouriteCount; i ++)
+  {
+    gaFavouriteDataArray[i] = getFavouriteData(i);
+  }
+  
+  var iHistoryCount = getHistoryCount();
+  
+  for (var i = 0; i < iHistoryCount; i ++)
+  {
+    gaHistoryDataArray[i] = getHistoryData(i);
+  }
+  
+  console.log("Load Favourite Count : " + iFavouriteCount );
+  console.log("Load History Count : " + iHistoryCount );
 }

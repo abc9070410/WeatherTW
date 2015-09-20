@@ -46,3 +46,12 @@ var gaFutureDataArray = [{
                 rainFutureState: "狀態",
                 rainFutureRelative: "相對溼度",
                 rainFutureRate: "降雨機率"}];
+
+                
+// KEY
+var KEY_FAVOURITE_COUNT = "KEY_FAVOURITE_COUNT";
+var KEY_FAVOURITE_INDEX = "KEY_FAVOURITE_INDEX";
+var KEY_HISTORY_COUNT = "KEY_HISTORY_COUNT";
+var KEY_HISTORY_INDEX = "KEY_HISTORY_INDEX";
+
+

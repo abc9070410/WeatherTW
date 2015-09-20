@@ -17,16 +17,16 @@ angular.module('starter.controllers', [])
     $scope.rainFutureLoaded2 = false;
 
     $scope.toggleLeft = function() {
-        console.log("toggleLeft");
-        $ionicSideMenuDelegate.toggleLeft();
+      console.log("toggleLeft");
+      $ionicSideMenuDelegate.toggleLeft();
     };
     
     $scope.clearFlag = function() {
-        $scope.locationLoaded = false;
-        $scope.rainPastLoaded = false;
-        $scope.rainPastLoaded2 = false;
-        $scope.rainFutureLoaded = false;
-        $scope.rainFutureLoaded2 = false;
+      $scope.locationLoaded = false;
+      $scope.rainPastLoaded = false;
+      $scope.rainPastLoaded2 = false;
+      $scope.rainFutureLoaded = false;
+      $scope.rainFutureLoaded2 = false;
     }
     
     $scope.initFlag = function() {
@@ -108,8 +108,10 @@ angular.module('starter.controllers', [])
         }
     };
     $scope.findRainfall = function() {
-        if ((this.readyState == 3 || this.readyState == 4) && 
-            this.responseText.indexOf("\"spotlight\"") > 0)
+        if (this.readyState == 4 || 
+            (this.readyState == 3 && 
+             this.responseText.indexOf("\"spotlight\"") > 0 &&
+             this.responseText.indexOf("//geo0.ggpht.com/cbk") > 0))
         {
             parseGPS(this.responseText);
             
@@ -284,6 +286,7 @@ angular.module('starter.controllers', [])
     $scope.init = function() {
       if (window.cordova)
       {
+          initData();
           //$scope.loadStart();
           requestNewRainfall($scope.requestRailfallDone);
       }
@@ -549,7 +552,7 @@ angular.module('starter.controllers', [])
         
         if ($scope.favouriteExisted)
         {
-          deleteFavourite(gsCurrentLocationName, gasTargetGPS);
+          removeFavourite(gsCurrentLocationName, gasTargetGPS);
           $scope.favouriteExisted = false;
         }
         else
@@ -652,6 +655,10 @@ angular.module('starter.controllers', [])
 
 
 /*
+
+ionic run --device android
+
+http://localhost:8100/#/tab/option
 chrome://inspect/#devices
 
 ionic plugin add https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git
@@ -686,8 +693,16 @@ http://webpac.hcml.gov.tw/webpac/booksearch.do?searchtype=simplesearch&search_fi
 
 https://tw.search.yahoo.com/sugg/gossip/gossip-tw-vertical_ss/?output=fxjsonp&pubid=1306&command=關鍵字&l=1&bm=3&appid=ydictionary&t_stmp=1395646717427&pq=car&nresults=10&bck=5k2ebfd9car5i%26b%3D4%26d%3DiiKfWG5pYEKrHcXKy2cw2b1DxeVOoCX5gpzCaw--%26s%3D25%26i%3D2gKtgxrQENbFmvvA7N00&csrcpvid=8J_ReDExOS5aCct7UsVsshUcMjAyLlMv4PD_0F2o&vtestid=&mtestid=null&spaceId=1351200381&callback=YUI.Env.JSONP.yui_3_9_1_1_1440932726773_483
 
-https://tw.dictionary.yahoo.com/dictionary?p=anime
+https://tw.dictionary.yahoo.com/dictionary?p=family
 
+
+# boradcast
+
+http://broadcast.ivy.com.tw/broadcast/Broadcast_list.aspx
+
+http://broadcast.ivy.com.tw/broadcast/Broadcast.aspx?Active=1
+http://broadcast.ivy.com.tw/broadcast/Broadcast_More.aspx?MagitemID=5069
+http://broadcast.ivy.com.tw/broadcast/BoardData/Enjoy/mp3/5069_2.mp3 
 */
 
 
