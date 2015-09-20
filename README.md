@@ -29,3 +29,5 @@ A Android app about weather using Ionic
 
 ## Main Feature
 
+get the weather information for the specific place form Gmap :  
+https://github.com/abc9070410/WeatherTW/blob/master/DEMO_1.md
